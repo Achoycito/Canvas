@@ -7,26 +7,88 @@
     <title>Pruebas Canvas</title>
     <style type="text/css">
         canvas{
-            background-color: rgb(230,230,230);
+            background-color: rgb(230,230,255);
+            margin: 20px;
         }
     </style>
 </head>
 <body>
-    <canvas id="canvasChido" width="900" height="700">
+
+    <canvas id="canvasChido" width="1400" height="880">
         Tu navegador no soporta Canvas pero aquí hay un Canvas bonito
     </canvas>
+
+    <img id="imagen" src="jelkichen.jpg" style="display:none">
 
     <script type="text/javascript">
         var canvas = document.getElementById("canvasChido");
         var ctx = canvas.getContext("2d");
 
+        var color = generateRandomColor();
+
+        ctx.fillStyle = "rgba(0,100,255,0.5)";
+        ctx.strokeStyle = "black";
+        canvas.addEventListener("click", function(e){
+            ctx.beginPath();
+            ctx.arc(e.offsetX, e.offsetY, 75, 0, 2*Math.PI);
+            ctx.stroke();
+            ctx.fill();
+        });
+        
+        canvas.addEventListener("mouseover", function(e){
+            color = generateRandomColor();
+            ctx.fillStyle = color;
+        })
+
+        function generateRandomColor() {
+            var r = Math.floor(Math.random() * 256);
+            var g = Math.floor(Math.random() * 256);
+            var b = Math.floor(Math.random() * 256);
+            var a = 0.5;
+
+            var color = "rgba("+r+","+g+","+b+",0.5)";
+
+            console.log(color);
+            return color;
+        }
+
+        //Imagen
+        // var img = document.getElementById("imagen");
+        // ctx.drawImage(img,50,50, 400,400);
+
+
+        //Texto relleno y contorno
+        // ctx.font = "30px Calibri";
+        // ctx.fillStyle = "rgba(255,60,0,1)";
+        // ctx.strokeStyle = "rgba(10,150,10,1)";
+        // ctx.fillText("Bienvenido humano", 50, 50);
+        // ctx.strokeText("Tome una galleta (acepte las cookies o formateamos el equipo)", 50, 100);
+
+        //Gradiente lineal
+        // var grd = ctx.createLinearGradient(40,200,300,300);
+        // grd.addColorStop(0, "blue");
+        // grd.addColorStop(1, "green");
+        // ctx.fillStyle = grd;
+        // ctx.fillRect(50,50,400,400);
+        
+        
+        //Gradiente radial
+        // var radialGrd = ctx.createRadialGradient(110,90, 30, 100,100,70);
+        // radialGrd.addColorStop(0,"yellow");
+        // radialGrd.addColorStop(0.9, "white");
+        // radialGrd.addColorStop(1, "red");
+        // ctx.fillStyle = radialGrd;
+        // ctx.fillRect(20,20,160,160);
+        
+        //Rectangulos
         // ctx.fillStyle = "rgba(255,0,70,1)";
         // ctx.fillRect(25,25,175,175);
         // ctx.fillStyle = "rgba(70, 255, 70, 1)";
         // ctx.fillRect(175,175,175,175);
         // ctx.fillStyle = "rgba(70, 70, 255, 0.5)";
         // ctx.fillRect(325,325,175,175);
-
+        
+        //Triangulos y lineas
         // ctx.moveTo(25,25);
         // ctx.lineTo(25,250);
         // ctx.stroke();
@@ -40,20 +102,16 @@
         // ctx.lineTo(320,75);
         // ctx.stroke();
         
+        //Circulos
+        // ctx.beginPath();
+        // ctx.arc(200,200, 100, 0, 2*Math.PI);
+        // ctx.strokeStyle = "rgba(255,0,0,1)";
+        // ctx.stroke();
+        // ctx.beginPath();
+        // ctx.arc(500,200, 100, 0, 2*Math.PI);
+        // ctx.fillStyle = "rgba(255,180,180,1)";
+        // ctx.fill();
         
-        ctx.beginPath();
-        ctx.arc(200,200, 100, 0, 2*Math.PI);
-        ctx.strokeStyle = "rgba(255,0,0,1)";
-        ctx.stroke();
-        
-        ctx.beginPath();
-        ctx.arc(500,200, 100, 0, 2*Math.PI);
-        ctx.fillStyle = "rgba(255,180,180,1)";
-        ctx.fill();
-
-
-        
-
         </script>
 </body>
 </html>
