@@ -23,34 +23,76 @@
     <script type="text/javascript">
         var canvas = document.getElementById("canvasChido");
         var ctx = canvas.getContext("2d");
+        var pressed = false;
+        var r, g, b;
+        var ultraX = 0, ultraY = 0;
+        ctx.fillRect(ultraX, ultraY, 70,70);
+        // generateRandomColor();
+        var fig = "arc";
 
-        var color = generateRandomColor();
-
-        ctx.fillStyle = "rgba(0,100,255,0.5)";
         ctx.strokeStyle = "black";
-        canvas.addEventListener("click", function(e){
-            ctx.beginPath();
-            ctx.arc(e.offsetX, e.offsetY, 75, 0, 2*Math.PI);
-            ctx.stroke();
-            ctx.fill();
+        
+        document.addEventListener("keydown", function(e){
+            console.log(e);
+            if(e.key == "w" || e.key =="ArrowUp"){
+                ultraY-=10;
+            }
+            if(e.key == "s" || e.key =="ArrowDown"){
+                ultraY+=10;
+            }
+            if(e.key == "a" || e.key =="ArrowLeft"){
+                ultraX-=10;
+            }
+            if(e.key == "d" || e.key =="ArrowRight"){
+                ultraX+=10;
+            }
+            pintarCuadrado();
         });
         
-        canvas.addEventListener("mouseover", function(e){
-            color = generateRandomColor();
-            ctx.fillStyle = color;
-        })
+        function pintarCuadrado(){
+            ctx.fillStyle = "rgb(230,230,255)";
+            ctx.fillRect(0, 0, 1000,1000);
 
-        function generateRandomColor() {
-            var r = Math.floor(Math.random() * 256);
-            var g = Math.floor(Math.random() * 256);
-            var b = Math.floor(Math.random() * 256);
-            var a = 0.5;
-
-            var color = "rgba("+r+","+g+","+b+",0.5)";
-
-            console.log(color);
-            return color;
+            ctx.fillStyle = "rgba(255,30,30,0.8)";
+            ctx.fillRect(ultraX, ultraY, 70,70);
         }
+        
+        // canvas.addEventListener("click", function(e){
+            // ctx.fillStyle = "rgba("+r+","+g+","+b+",0.5)";
+        //     ctx.beginPath();
+        //     if(fig=="arc"){
+        //         ctx.arc(e.offsetX, e.offsetY, 75, 0, 2*Math.PI);
+        //         ctx.stroke();
+        //     }else{
+        //         ctx.fillRect(e.offsetX-75, e.offsetY-75, 150,150);
+        //         ctx.strokeRect(e.offsetX-75, e.offsetY-75, 150,150);
+        //     }
+        //     ctx.fill();
+        // });
+        // canvas.addEventListener("mouseover", function(e){
+        //     generateRandomColor();
+        // })
+        // canvas.addEventListener("mouseout", function(e){
+        //     fig = (fig=="arc") ? "rect" : "arc";
+        // });
+        // canvas.addEventListener("mousemove", function(e){
+        //     if(pressed){
+        //         ctx.fillStyle = "black";
+        //         ctx.fillRect(e.offsetX-5, e.offsetY-5, 10,10);
+        //     }
+        // });
+        // canvas.addEventListener("mouseup", function(e){
+        //     pressed = false;
+        // });
+        // canvas.addEventListener("mousedown", function(e){
+        //     pressed = true;
+        // });
+
+        // function generateRandomColor() {
+        //     r = Math.floor(Math.random() * 256);
+        //     g = Math.floor(Math.random() * 256);
+        //     b = Math.floor(Math.random() * 256);
+        // }
 
         //Imagen
         // var img = document.getElementById("imagen");
