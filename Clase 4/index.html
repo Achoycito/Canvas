@@ -23,11 +23,19 @@
         var ctx = null;
         var pressed = false;
         var r, g, b;
-        var ultraX = 0, ultraY = 10;
+        var player1 = null;
+        var player2 = null;
+        var score = 0;
+        var velMov = 10;
+        var direccion = "derecha";
         
         function start(){
             canvas = document.getElementById("canvasChido");
             ctx = canvas.getContext("2d");
+
+            player1 = new cuadro(0, 50, 100, 100, "blue");
+            player2 = new cuadro(getRandomInt(1200)+50, getRandomInt(700)+50, 50, 50, "yellow");
+
             pintarCuadrado();
         }
 
@@ -44,40 +52,98 @@
 
         function pintarCuadrado(){
             window.requestAnimationFrame(pintarCuadrado);
-            ultraX+=10;
-            if(ultraX>=1400){
-                ultraX=100;
-            }
-            console.log(ultraX);
             ctx.fillStyle = "rgb(230,230,255)";
             ctx.fillRect(0, 0, 10000,10000);
 
-            generateRandomColor();
-            ctx.fillStyle = "rgba("+r+","+g+","+b+",1)";
-            ctx.fillRect(ultraX, ultraY, 70,70);
-            ctx.strokeRect(ultraX, ultraY, 70,70);
+            ctx.font = "30px Calibri";
+            ctx.fillStyle = "rgba(255,60,0,1)";
+            ctx.fillText("Puntuación: "+score, 10, 30);
+            player1.pintar(ctx);
+            player2.pintar(ctx);
+            
+            switch (direccion) {
+                case "derecha":
+                    player1.x+=velMov;
+                    if(player1.x>=1400){
+                        player1.x=-99;
+                    }
+                    break;
+                case "izquierda":
+                    player1.x-=velMov;
+                    if(player1.x<=-99){
+                        player1.x=1400;
+                    }
+                    break;
+                case "arriba":
+                    player1.y-=velMov;
+                    if(player1.y<=-99){
+                        player1.y=880;
+                    }
+                    break;
+                case "abajo":
+                    player1.y+=velMov;
+                    if(player1.y>=880){
+                        player1.y=-99;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            if (player1.se_tocan(player2)) {
+                player2.x = getRandomInt(1200)+50;
+                player2.y = getRandomInt(700)+50;
+                score+=5;
+                velMov+=5;
+            }
         }
 
 
-        
+        function cuadro(x,y,w,h,c){
+            this.x = x;
+            this.y = y;
+            this.w = w;
+            this.h = h;
+            this.c = c;
 
-        // document.addEventListener("keydown", function(e){
-        //     if(e.key == "w" || e.key =="ArrowUp"){
-        //         ultraY-=15;
-        //     }
-        //     if(e.key == "s" || e.key =="ArrowDown"){
-        //         ultraY+=15;
-        //     }
-        //     if(e.key == "a" || e.key =="ArrowLeft"){
-        //         ultraX-=15;
-        //     }
-        //     if(e.key == "d" || e.key =="ArrowRight"){
-        //         ultraX+=15;
-        //     }
-        //     pintarCuadrado();
-        // });
+            this.se_tocan = function (target) { 
+                if(this.x < target.x + target.w &&
+                this.x + this.w > target.x && 
+                this.y < target.y + target.h && 
+                this.y + this.h > target.y){
+                    return true;
+                    console.log("Llamado de emergencia nueve uno uno")
+                }
+            };
 
-        
+            this.pintar = function(ctx){
+                ctx.fillStyle = this.c;
+                ctx.fillRect(this.x, this.y, this.w, this.h);
+                ctx.strokeRect(this.x, this.y, this.w, this.h);
+            }
+        }
+
+        document.addEventListener("keydown", function(e){
+            if(e.key == "w" || e.key =="ArrowUp"){
+                // ultraY-=15;
+                direccion = "arriba";
+            }
+            if(e.key == "s" || e.key =="ArrowDown"){
+                // ultraY+=15;
+                direccion = "abajo";
+            }
+            if(e.key == "a" || e.key =="ArrowLeft"){
+                // ultraX-=15;
+                direccion = "izquierda";
+            }
+            if(e.key == "d" || e.key =="ArrowRight"){
+                // ultraX+=15;
+                direccion = "derecha";
+            }
+        });
+
+        function getRandomInt(limite){
+            return Math.floor(Math.random() * limite);
+        }
         
         // canvas.addEventListener("mouseover", function(e){
         //     generateRandomColor();
