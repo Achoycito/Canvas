@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pruebas Canvas</title>
+    <style type="text/css">
+        canvas{
+            background-color: rgb(230,230,255);
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvasChido" width="1400" height="880">
+        Tu navegador no soporta Canvas pero aquí hay un Canvas bonito
+    </canvas>
+
+    <script type="text/javascript">
+        var canvas = null;
+        var ctx = null;
+        var pressed = false;
+        var r, g, b;
+        var ultraX = 0, ultraY = 10;
+        
+        function start(){
+            canvas = document.getElementById("canvasChido");
+            ctx = canvas.getContext("2d");
+            pintarCuadrado();
+        }
+
+        window.requestAnimationFrame = (function () {
+        return window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            function (callback) {
+                window.setTimeout(callback, 17);
+            };
+        }());
+
+        document.addEventListener("load", start(), false);
+
+        function pintarCuadrado(){
+            window.requestAnimationFrame(pintarCuadrado);
+            ultraX+=10;
+            if(ultraX>=1400){
+                ultraX=100;
+            }
+            console.log(ultraX);
+            ctx.fillStyle = "rgb(230,230,255)";
+            ctx.fillRect(0, 0, 10000,10000);
+
+            generateRandomColor();
+            ctx.fillStyle = "rgba("+r+","+g+","+b+",1)";
+            ctx.fillRect(ultraX, ultraY, 70,70);
+            ctx.strokeRect(ultraX, ultraY, 70,70);
+        }
+
+
+        
+
+        // document.addEventListener("keydown", function(e){
+        //     if(e.key == "w" || e.key =="ArrowUp"){
+        //         ultraY-=15;
+        //     }
+        //     if(e.key == "s" || e.key =="ArrowDown"){
+        //         ultraY+=15;
+        //     }
+        //     if(e.key == "a" || e.key =="ArrowLeft"){
+        //         ultraX-=15;
+        //     }
+        //     if(e.key == "d" || e.key =="ArrowRight"){
+        //         ultraX+=15;
+        //     }
+        //     pintarCuadrado();
+        // });
+
+        
+        
+        // canvas.addEventListener("mouseover", function(e){
+        //     generateRandomColor();
+        // })
+        
+        // canvas.addEventListener("mousedown", function(e){
+        //     pressed = true;
+        // });
+
+        function generateRandomColor() {
+            r = Math.floor(Math.random() * 256);
+            g = Math.floor(Math.random() * 256);
+            b = Math.floor(Math.random() * 256);
+        }
+
+        
+
+</script>
+</body>
+</html>
