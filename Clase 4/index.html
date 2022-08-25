@@ -25,9 +25,11 @@
         var r, g, b;
         var player1 = null;
         var player2 = null;
+        var paredes = [];
         var score = 0;
         var velMov = 10;
         var direccion = "derecha";
+        var pause = false;
         
         function start(){
             canvas = document.getElementById("canvasChido");
@@ -35,6 +37,10 @@
 
             player1 = new cuadro(0, 50, 100, 100, "blue");
             player2 = new cuadro(getRandomInt(1200)+50, getRandomInt(700)+50, 50, 50, "yellow");
+            paredes.push(new cuadro(500,50,500,40, "gray"));
+            paredes.push(new cuadro(1200,200,45,400, "gray"));
+            paredes.push(new cuadro(600,800,450,30, "gray"));
+            paredes.push(new cuadro(100,250,50,500, "gray"));
 
             pintarCuadrado();
         }
@@ -60,7 +66,24 @@
             ctx.fillText("Puntuación: "+score, 10, 30);
             player1.pintar(ctx);
             player2.pintar(ctx);
+            for (let i = 0; i < paredes.length; i++) {
+                paredes[i].pintar(ctx);
+            }
             
+            if(pause){
+                ctx.fillStyle = "rgba(0,0,0,0.5)";
+                ctx.fillRect(0,0,2000,2000);
+
+                ctx.fillStyle = "white";
+                ctx.fillText("P A U S A", 10,400);
+            }
+            else{
+                update();
+            }
+            
+        }
+
+        function update(){
             switch (direccion) {
                 case "derecha":
                     player1.x+=velMov;
@@ -93,10 +116,29 @@
                 player2.x = getRandomInt(1200)+50;
                 player2.y = getRandomInt(700)+50;
                 score+=5;
-                velMov+=5;
+                velMov+=2;
+            }
+            for (let i = 0; i < paredes.length; i++) {
+                if(player1.se_tocan(paredes[i])){
+                    switch (direccion) {
+                        case "derecha":
+                            player1.x-=velMov;
+                            break;
+                        case "izquierda":
+                            player1.x+=velMov;
+                            break;
+                        case "arriba":
+                            player1.y+=velMov;
+                            break;
+                        case "abajo":
+                            player1.y-=velMov;
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
         }
-
 
         function cuadro(x,y,w,h,c){
             this.x = x;
@@ -123,6 +165,7 @@
         }
 
         document.addEventListener("keydown", function(e){
+            console.log(e.key);
             if(e.key == "w" || e.key =="ArrowUp"){
                 // ultraY-=15;
                 direccion = "arriba";
@@ -138,6 +181,9 @@
             if(e.key == "d" || e.key =="ArrowRight"){
                 // ultraX+=15;
                 direccion = "derecha";
+            }
+            if(e.key == " "){
+                pause = (pause) ? false : true;
             }
         });
 
