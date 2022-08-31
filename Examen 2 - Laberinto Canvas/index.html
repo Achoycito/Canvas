@@ -6,44 +6,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pruebas Canvas</title>
     <style type="text/css">
+        body{
+            background-color: rgb(40,40,40);
+        }
         canvas{
-            background-color: rgb(230,230,255);
+            background-color: rgb(40,40,40);
             margin: 20px;
+        }
+        audio{
+            display:none;
         }
     </style>
 </head>
 <body>
+    <!-- <audio loop controls preload="auto">
+        <source src="snd/song.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio> -->
 
-    <canvas id="canvasChido" width="800" height="800">
+    <canvas id="canvasChido" width="850" height="875">
         Tu navegador no soporta Canvas pero aquí hay un Canvas bonito
     </canvas>
 
     <script type="text/javascript">
         var canvas = null;
         var ctx = null;
+
+        var desfaseX=25;
+        var desfaseY=45;
         
-        var pause = false;
+        var pause = true;
+        var iniciado = false;
         var colorPared = "brown";
         
+        var personaje = Math.floor(Math.random() * 5);
         var player1 = null;
+        var finish = null;
         var direccion = null;
         var velMov = 2;
 
         var paredes = [];
 
-        var indiana = new Image();
-        var diamante = new Image();
-        var pickupsound = new Audio();
+        var bg_img = new Image();
+        var player_icon = new Image();
+        var finish_icon = new Image();
+        var bgmusic = new Audio();
+
+        
         
         function start(){
             canvas = document.getElementById("canvasChido");
             ctx = canvas.getContext("2d");
 
             player1 = new Cuadro(8, 8, "objeto", null, null);
+            finish = new Cuadro(768, 768, "objeto", null, null);
             crearParedes();
-            indiana.src = "img/pato.png";
-            // diamante.src = "img/diamond.png";
-            // pickupsound.src = "sound/bonk.mp3";
+            
+            bg_img.src = "img/bg_800.png";
+            player_icon.src = "img/icon_"+personaje+"_24.png";
+            finish_icon.src = "img/finish_"+personaje+"_24.png";
+            bgmusic.src = 'snd/song.wav';
+            bgmusic.loop = true;
 
             pintarCuadrado();
         }
@@ -61,22 +84,34 @@
 
         function pintarCuadrado(){
             window.requestAnimationFrame(pintarCuadrado);
-            ctx.fillStyle = "rgb(230,230,255)";
+            ctx.fillStyle = "rgb(40,40,40)";
             ctx.fillRect(0, 0, 10000,10000);
 
             ctx.font = "30px Calibri";
-            ctx.fillStyle = "rgba(255,60,0,1)";
-            // ctx.fillText("Puntuación: "+score, 10, 30);
-            ctx.drawImage(indiana, player1.x, player1.y);
+            ctx.fillStyle = "rgb(255,255,255,1)";
+            ctx.fillText("Tiempo: ",desfaseX,32);
+            
+            //Dibujar iconos y paredes
+            ctx.drawImage(bg_img, desfaseX,desfaseY);
+            ctx.drawImage(player_icon, player1.x, player1.y);
+            ctx.drawImage(finish_icon, finish.x, finish.y);
             for (let i = 0; i < paredes.length; i++) {
                 paredes[i].pintar(ctx);
             }
-            if(pause){
-                ctx.fillStyle = "rgba(0,0,0,0.5)";
-                ctx.fillRect(0,0,2000,2000);
 
+            //Si está en pausa imprimir pantalla de pausa, si no actualizar la pantalla
+            if(pause){
+                ctx.fillStyle = "rgba(0,0,0,0.6)";
+                ctx.fillRect(0,0,2000,2000);
+                
+                ctx.font = "130px Cambria";
                 ctx.fillStyle = "white";
-                ctx.fillText("P A U S A", 10,400);
+                ctx.fillText("P A U S A", 75,400);
+                ctx.font = "30px Cambria";
+                ctx.fillText("Presiona ESPACIO para reanudar la partida", 75,500);
+                ctx.font = "20px Cambria";
+                ctx.fillText("Mueve tu personaje con WASD o las flechas", 75,550);
+                ctx.fillText("Cruza el laberinto del camino amarillo y llega a eso que tanto deseas", 75,600);
             }
             else{
                 update();
@@ -87,7 +122,7 @@
         function update(){
             switch (direccion) {
                 case "derecha":
-                    if(player1.x!=776)
+                    if(player1.x!=776+desfaseX)
                         player1.x+=velMov;
                     break;
                 case "izquierda":
@@ -99,11 +134,17 @@
                         player1.y-=velMov;
                     break;
                 case "abajo":
-                    if(player1.y!=776)
+                    if(player1.y!=776+desfaseY)
                         player1.y+=velMov;
                     break;
                 default:
                     break;
+            }
+
+            if(player1.se_tocan(finish)){
+                finish.x = 500;
+                finish.y = 500;
+                
             }
             for (let i = 0; i < paredes.length; i++) {
                 if(player1.se_tocan(paredes[i])){
@@ -130,14 +171,14 @@
         function Cuadro(x, y, tipo, orient, largo){
             this.tipo = tipo;
             if(tipo == "objeto"){
-                this.x = x;
-                this.y = y;
+                this.x = x+desfaseX;
+                this.y = y+desfaseY;
                 this.w = 24;
                 this.h = 24;
             }
             else if(tipo == "pared"){
-                this.x = x*40;
-                this.y = y*40;
+                this.x =(x*40)+desfaseX;
+                this.y =(y*40)+desfaseY;
                 if(orient == "v"){
                     this.w = 2;
                     this.h = largo*40;
@@ -154,36 +195,45 @@
                 this.y < target.y + target.h && 
                 this.y + this.h > target.y){
                     return true;
-                    console.log("Llamado de emergencia nueve uno uno")
                 }
             };
 
             this.pintar = function(ctx){
+                ctx.fillStyle = "black";
+                ctx.strokeStyle = "black";
                 ctx.fillRect(this.x, this.y, this.w, this.h);
                 ctx.strokeRect(this.x, this.y, this.w, this.h);
             }
         }
 
         document.addEventListener("keydown", function(e){
-            console.log(e.key);
-            if(e.key == "w" || e.key =="ArrowUp"){
-                // ultraY-=15;
-                direccion = "arriba";
-            }
-            if(e.key == "s" || e.key =="ArrowDown"){
-                // ultraY+=15;
-                direccion = "abajo";
-            }
-            if(e.key == "a" || e.key =="ArrowLeft"){
-                // ultraX-=15;
-                direccion = "izquierda";
-            }
-            if(e.key == "d" || e.key =="ArrowRight"){
-                // ultraX+=15;
-                direccion = "derecha";
+            if(!pause){
+                if(e.key == "w" || e.key =="ArrowUp"){
+                    direccion = "arriba";
+                }
+                if(e.key == "s" || e.key =="ArrowDown"){
+                    direccion = "abajo";
+                }
+                if(e.key == "a" || e.key =="ArrowLeft"){
+                    direccion = "izquierda";
+                }
+                if(e.key == "d" || e.key =="ArrowRight"){
+                    direccion = "derecha";
+                }
             }
             if(e.key == " "){
-                pause = (pause) ? false : true;
+                if(pause){
+                    pause = false;
+                    bgmusic.play();
+                }
+                else{
+                    pause = true;
+                    bgmusic.pause();
+                }
+                direccion = "nada";
+                if(!iniciado){
+                    iniciado = true;
+                }
             }
         });
 
@@ -192,6 +242,11 @@
         });
 
         function crearParedes(){
+            paredes.push(new Cuadro(0,0,"pared","h",20));
+            paredes.push(new Cuadro(0,0,"pared","v",20));
+            paredes.push(new Cuadro(20,0,"pared","v",20));
+            paredes.push(new Cuadro(0,20,"pared","h",20));
+
             paredes.push(new Cuadro(1,0,"pared","v",1));
             paredes.push(new Cuadro(6,0,"pared","v",4));
             paredes.push(new Cuadro(11,0,"pared","v",1));
